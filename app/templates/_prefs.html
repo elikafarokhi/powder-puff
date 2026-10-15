@@ -1,0 +1,52 @@
+{# open the "more resorts" box straight away if any of them are already picked (settings page) #}
+{% set extra_picked = [] %}
+{% for province, region, ms in regions %}
+  {% for m in ms if not m.default and m.slug in selected %}{% set _ = extra_picked.append(m.slug) %}{% endfor %}
+{% endfor %}
+
+<fieldset class="field">
+  <legend>Mountains</legend>
+
+  <div class="chips">
+    {% for province, region, ms in regions %}
+      {% for m in ms if m.default %}
+        <label class="chip">
+          <input type="checkbox" name="mountains" value="{{ m.slug }}" {% if m.slug in selected %}checked{% endif %}>
+          {{ m.name }}
+        </label>
+      {% endfor %}
+    {% endfor %}
+  </div>
+
+  <details class="extra" {% if extra_picked %}open{% endif %}>
+    <summary>
+      More resorts
+      {% if extra_picked %}<span class="count">{{ extra_picked|length }} picked</span>{% endif %}
+    </summary>
+    <div class="pick-regions">
+      {% for province, region, ms in regions %}
+        <div class="pick-region">
+          <p>{{ region }} <span>{{ province }}</span></p>
+          {% for m in ms if not m.default %}
+            <label class="check">
+              <input type="checkbox" name="mountains" value="{{ m.slug }}" {% if m.slug in selected %}checked{% endif %}>
+              {{ m.name }}
+            </label>
+          {% endfor %}
+        </div>
+      {% endfor %}
+    </div>
+  </details>
+</fieldset>
+
+<label class="field">
+  Email me when one of them gets at least
+  <select name="threshold">
+    {% for t in thresholds %}
+      <option value="{{ t }}" {% if t == threshold %}selected{% endif %}>{{ t }}" overnight</option>
+    {% endfor %}
+  </select>
+</label>
+
+{# hidden from people, bots fill it in #}
+<input class="hp" type="text" name="website" tabindex="-1" autocomplete="off" aria-hidden="true">

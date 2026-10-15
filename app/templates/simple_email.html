@@ -1,0 +1,33 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+</head>
+{# email clients throw away <style> tags and outside css, so it's all inline #}
+<body style="margin:0; padding:0; background:#eaf3fb;">
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#eaf3fb;">
+  <tr>
+    <td align="center" style="padding:32px 16px;">
+      <table role="presentation" width="100%" cellpadding="0" cellspacing="0"
+             style="max-width:520px; background:#ffffff; border:1px solid #cfe1f0; border-radius:22px;
+                    font-family:Helvetica, Arial, sans-serif; color:#1d3a57;">
+        <tr>
+          <td align="center" style="padding:32px 32px 8px;">
+            <div style="font-size:52px; line-height:1;">🐻‍❄️</div>
+            <h1 style="margin:12px 0 8px; font-size:24px; color:#3b78b5;">{{ heading }}</h1>
+            <p style="margin:0; font-size:15px; line-height:1.5; color:#4f6a82;">{{ body }}</p>
+          </td>
+        </tr>
+        <tr>
+          <td align="center" style="padding:24px 32px 32px;">
+            <a href="{{ button_url }}" style="display:inline-block; padding:12px 26px; border-radius:999px;
+               background:#3b78b5; color:#ffffff; font-size:15px; font-weight:bold; text-decoration:none;">{{ button_text }}</a>
+          </td>
+        </tr>
+      </table>
+    </td>
+  </tr>
+</table>
+</body>
+</html>

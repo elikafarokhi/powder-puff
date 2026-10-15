@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+{% from "_bear.html" import bear %}
+
+{% block title %}Your alerts · Powder Puff{% endblock %}
+
+{% block content %}
+<div class="narrow">
+  <header class="top">
+    {{ bear("bear") }}
+    <div class="title">
+      <h1>Your alerts</h1>
+      <p class="muted">{{ sub.email }}</p>
+    </div>
+  </header>
+
+  <section class="panel">
+    <form method="post" action="/manage/{{ sub.token }}">
+      {% include "_prefs.html" %}
+      <button>Save</button>
+    </form>
+  </section>
+
+  <form method="post" action="/unsubscribe/{{ sub.token }}" class="unsub">
+    <button class="quiet">Unsubscribe</button>
+  </form>
+
+  <p class="muted center"><a href="/">Back to the dashboard</a></p>
+</div>
+{% endblock %}

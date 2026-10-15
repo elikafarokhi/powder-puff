@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+{% from "_bear.html" import bear %}
+
+{% block title %}{{ title }} · Powder Puff{% endblock %}
+
+{% block content %}
+<div class="message">
+  {{ bear("bear big") }}
+  <h1>{{ title }}</h1>
+  <p>{{ text }}</p>
+
+  {% if post_url %}
+    <form method="post" action="{{ post_url }}"><button>{{ post_label }}</button></form>
+  {% endif %}
+  {% if link_url %}
+    <a class="button" href="{{ link_url }}">{{ link_label }}</a>
+  {% endif %}
+
+  <p class="muted"><a href="/">Back to the dashboard</a></p>
+</div>
+{% endblock %}

@@ -1,0 +1,150 @@
+{% extends "base.html" %}
+{% from "_bear.html" import bear %}
+
+{% block content %}
+<header class="top">
+  {{ bear("bear") }}
+  <div class="title">
+    <h1>Powder Puff</h1>
+    <p class="muted">
+      {% if last_checked %}checked {{ last_checked }} · {% endif %}
+      <a href="#signup">get alerts</a>
+    </p>
+  </div>
+  <form method="post" action="/refresh">
+    <button>Refresh</button>
+  </form>
+</header>
+
+<h2>Featured</h2>
+<div class="grid">
+  {% for card in featured %}
+    {% set m = card.mountain %}
+    {% set snap = card.snap %}
+    <article class="card {{ card.css }}">
+      <div class="card-top">
+        <div>
+          <a class="name" href="{{ m.maps_url }}" target="_blank" rel="noopener">{{ m.name }}</a>
+          {% if m.ikon %}<span class="ikon">Ikon</span>{% endif %}
+          <p class="where">{{ m.region }}</p>
+        </div>
+        <span class="tag">
+          {% if card.css == "powder" %}{{ bear("tag-bear") }}{% endif %}
+          {{ card.label }}
+        </span>
+      </div>
+
+      {% if snap %}
+        <p class="big">{{ snap.overnight_in }}"<span>overnight</span></p>
+        <dl class="stats">
+          <div><dt>24 hrs</dt><dd>{{ snap.last_24h_in }}"</dd></div>
+          <div><dt>base</dt><dd>{% if snap.base_in is not none %}{{ snap.base_in }}"{% else %}–{% endif %}</dd></div>
+          <div><dt>summit</dt><dd>{% if snap.temp_c is not none %}{{ snap.temp_c|round|int }}°C{% else %}–{% endif %}</dd></div>
+        </dl>
+      {% else %}
+        <p class="muted">no data yet</p>
+      {% endif %}
+    </article>
+  {% endfor %}
+</div>
+
+<section class="all">
+  <div class="section-head">
+    <div>
+      <h2>All resorts</h2>
+      <p class="muted">new snow overnight, in inches</p>
+    </div>
+    <div class="controls">
+      <div class="seg" role="group" aria-label="Province">
+        <button type="button" data-province="" aria-pressed="true">All</button>
+        <button type="button" data-province="Ontario" aria-pressed="false">Ontario</button>
+        <button type="button" data-province="Quebec" aria-pressed="false">Quebec</button>
+      </div>
+      <input type="search" id="find" placeholder="Search" aria-label="Search resorts">
+    </div>
+  </div>
+
+  <div class="regions">
+    {% for province, region, rows in all_regions %}
+      <div class="region" data-region data-province="{{ province }}">
+        <div class="region-head">
+          <h3>{{ region }}</h3>
+          <span>{{ province }}</span>
+        </div>
+        <ul>
+          {% for card in rows %}
+            {% set m = card.mountain %}
+            {% set snap = card.snap %}
+            <li class="resort {{ card.css }}" data-name="{{ m.name }}"
+                {% if snap %}title="{{ snap.last_24h_in }}&quot; in 24 hrs{% if snap.base_in is not none %} · {{ snap.base_in }}&quot; base{% endif %}"{% endif %}>
+              <a href="{{ m.maps_url }}" target="_blank" rel="noopener">{{ m.name }}</a>
+              {% if m.ikon %}<span class="ikon">Ikon</span>{% endif %}
+              <span class="snow">
+                {% if card.css == "powder" %}{{ bear("tag-bear") }}{% endif %}
+                {% if snap %}{{ snap.overnight_in }}"{% else %}–{% endif %}
+              </span>
+            </li>
+          {% endfor %}
+        </ul>
+      </div>
+    {% endfor %}
+  </div>
+  <p class="muted center" id="no-match" hidden>No resorts match that.</p>
+</section>
+
+<section class="panel" id="signup">
+  <div class="panel-head">
+    {{ bear("bear small") }}
+    <div>
+      <h2>Get a powder alert</h2>
+      <p class="muted">Pick your mountains and you'll get an email around 6am when they get a real dump overnight. Free, and you can unsubscribe any time.</p>
+    </div>
+  </div>
+
+  <form method="post" action="/subscribe">
+    <label class="field">
+      Email
+      <input type="email" name="email" required placeholder="you@example.com" autocomplete="email">
+    </label>
+    {% with threshold = default_threshold %}
+      {% include "_prefs.html" %}
+    {% endwith %}
+    <button>Sign me up</button>
+  </form>
+</section>
+
+<script>
+  // province buttons + search box for the "all resorts" list.
+  // accents are ignored, so "edouard" finds "Édouard"
+  const plain = s => s.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
+  const find = document.getElementById("find");
+  const provinceButtons = document.querySelectorAll(".seg button");
+  let province = "";
+
+  function filter() {
+    const q = plain(find.value.trim());
+    let anyShown = false;
+    for (const group of document.querySelectorAll("[data-region]")) {
+      let shown = 0;
+      if (!province || group.dataset.province === province) {
+        for (const row of group.querySelectorAll("[data-name]")) {
+          row.hidden = !plain(row.dataset.name).includes(q);
+          if (!row.hidden) shown++;
+        }
+      }
+      group.hidden = shown === 0;
+      if (shown) anyShown = true;
+    }
+    document.getElementById("no-match").hidden = anyShown;
+  }
+
+  find.addEventListener("input", filter);
+  for (const button of provinceButtons) {
+    button.addEventListener("click", () => {
+      province = button.dataset.province;
+      provinceButtons.forEach(b => b.setAttribute("aria-pressed", b === button));
+      filter();
+    });
+  }
+</script>
+{% endblock %}

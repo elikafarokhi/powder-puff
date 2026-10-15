@@ -1,0 +1,21 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{% block title %}Powder Puff{% endblock %}</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600&family=Nunito:wght@400;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/static/style.css?v={{ css_version }}">
+</head>
+<body>
+  <main class="wrap">
+    {% block content %}{% endblock %}
+
+    <footer class="muted">
+      snow numbers are estimates from <a href="https://open-meteo.com/" target="_blank" rel="noopener">Open-Meteo</a>,
+      not the resorts' own reports
+    </footer>
+  </main>
+</body>
+</html>
