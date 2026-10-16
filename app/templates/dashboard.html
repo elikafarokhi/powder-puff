@@ -8,13 +8,29 @@
     <h1>Powder Puff</h1>
     <p class="muted">
       {% if last_checked %}checked {{ last_checked }} · {% endif %}
-      <a href="#signup">get alerts</a>
+      <a href="#signup">alert settings</a>
     </p>
   </div>
   <form method="post" action="/refresh">
     <button>Refresh</button>
   </form>
 </header>
+
+{# one-field version of the sign-up below: subscribes to the featured mountains at the default threshold #}
+<section class="hero-signup">
+  <div class="hero-copy">
+    <h2>Never miss a powder day</h2>
+    <p>Get an email around 6am when it dumps overnight. Free, unsubscribe any time.</p>
+  </div>
+  <form method="post" action="/subscribe" class="quick">
+    <input type="email" name="email" required placeholder="you@example.com" autocomplete="email" aria-label="Email">
+    {% for m in featured %}<input type="hidden" name="mountains" value="{{ m.mountain.slug }}">{% endfor %}
+    <input type="hidden" name="threshold" value="{{ default_threshold }}">
+    <input class="hp" type="text" name="website" tabindex="-1" autocomplete="off" aria-hidden="true">
+    <button>Get alerts</button>
+  </form>
+  <p class="hero-note">Alerts for the six below · <a href="#signup">pick your own mountains</a></p>
+</section>
 
 <h2>Featured</h2>
 <div class="grid">
