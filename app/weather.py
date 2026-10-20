@@ -1,3 +1,4 @@
+import time
 from dataclasses import dataclass
 from datetime import datetime, timedelta
 
@@ -27,9 +28,18 @@ def fetch_hourly(mountains):
         "past_days": 1,
         "forecast_days": 1,
     }
-    resp = requests.get(API_URL, params=params, timeout=15)
-    resp.raise_for_status()
-    data = resp.json()
+    # the cron only runs once a day, so a hiccup at open-meteo would mean no alerts that morning.
+    # try a few times before giving up
+    for wait in [2, 10, None]:
+        try:
+            resp = requests.get(API_URL, params=params, timeout=15)
+            resp.raise_for_status()
+            data = resp.json()  # sometimes comes back empty while they're having trouble
+            break
+        except requests.RequestException:
+            if wait is None:
+                raise
+            time.sleep(wait)
     if isinstance(data, dict):  # only one location comes back as an object, not a list
         data = [data]
     return [location["hourly"] for location in data]
